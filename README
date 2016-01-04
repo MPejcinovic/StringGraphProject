@@ -1,0 +1,13 @@
+This is the place for placing code for string graph project. 
+The goal is to implement the layout phase:
+1) Remove containments
+2) Remove transitive edges
+3) Create chunks
+
+The results will be compared using Bandage and Gepard tools.
+
+The team consists of two students:
+	-Matea Pejčinović (MPejcinovic)
+	-FRan Stanić (Meshtar)
+
+This project was created during our master study on Faculty of Electrical Engineering and Computing, University of Zagreb.
