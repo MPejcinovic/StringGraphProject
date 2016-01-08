@@ -14,10 +14,6 @@ public class Vertex implements Iterable<Edge>{
 	private List<Edge> outEdges=new ArrayList<>();
 	private List<Edge> inEdges=new ArrayList<>();
 	
-	public String toGFA(){
-		return "S "+read.getID()+" "+read.sequence;
-	}
-	
 	public void sortEdges(){
 		outEdges.sort(new Comparator<Edge>() {
 
@@ -33,11 +29,6 @@ public class Vertex implements Iterable<Edge>{
 			}
 		});
 		//System.out.println(outEdges);
-	}
-	
-	@Override
-	public String toString() {
-		return read.getID()+(BEGIN?".B":".E");//"Out:"+outEdges+" IN:"+inEdges;
 	}
 	
 	public Read getRead(){
@@ -72,4 +63,3 @@ public class Vertex implements Iterable<Edge>{
 	}
 	
 }
-

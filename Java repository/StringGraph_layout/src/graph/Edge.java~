@@ -13,32 +13,11 @@ public class Edge {
 	private Overlap overlap;
 	private int beginIdx;
 	private int endIdx;
-	public boolean reduce;
 	private ArrayList<Edge> containedEdges=new ArrayList<>();
-	
-	public String toGFA(){
-		return
-				"L\t"+
-				overlap.leftPart().getRead().getID()+
-				"\t"+(overlap.leftPart().isForward()?"+":"-")+"\t"+
-				overlap.rightPart().getRead().getID()+
-				"\t"+(overlap.rightPart().isForward()?"+":"-")+"\t"+
-				overlap.size()+"M";
-	}
 	
 	@Override
 	public String toString() {
-		return startVertex+"->"+endVertex+" LEN:"+length();//"Len:"+length();
-	//	return overlap.IDX+"";//+" LEN:"+length();
-	}
-	
-	public ArrayList<Overlap> getOverlaps(){
-		ArrayList<Overlap> overlaps=new ArrayList<>();
-		overlaps.add(getOverlap());
-		for(Edge edge:containedEdges){
-			overlaps.addAll(edge.getOverlaps());
-		}
-		return overlaps;
+		return ""+length();
 	}
 	
 	public Overlap getOverlap(){
@@ -114,7 +93,6 @@ public class Edge {
 		startVertex.getOutEdges().add(this);
 		endVertex.getInEdges().add(this);
 		startVertex.sortEdges();
-		//System.out.println(this);
 	}
 
 	public boolean hasInteriorVertices() {
@@ -122,4 +100,3 @@ public class Edge {
 	}
 	
 }
-
