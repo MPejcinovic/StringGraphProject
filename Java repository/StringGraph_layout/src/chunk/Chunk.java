@@ -17,7 +17,11 @@ public class Chunk {
 	public Vertex lastVertex(){
 		return vertices.get(vertices.size()-1);
 	}
-	
+
+	public Vertex firstVertex(){
+		return vertices.get(0);
+	}
+
 	public String toGFA60(){
 		StringBuilder b=new StringBuilder();
 		for(Vertex v:vertices){
@@ -35,17 +39,20 @@ public class Chunk {
 			if(edge.getStartVertex()!=vertices.get(i)){
 				throw new IllegalStateException("IS");
 			}
+			b.append(edge.toDNA());
+			/*
 			Read read=edge.getEndVertex().getRead();
 			Overlap overlap=edge.getOverlap();
 			OverlapPart part=overlap.f;
 			if(part.getRead()!=read){
 				part=overlap.g;
 			}
+
 			if(part.isForward()){
 				b.append(read.get(part.end, read.length()-1));
 			}else{
-				b.append(read.get(0,part.begin));
-			}
+				b.append(read.get(part.begin,0));
+			}*/
 		}
 		return b.toString();
 	}

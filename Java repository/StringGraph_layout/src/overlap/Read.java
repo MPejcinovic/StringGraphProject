@@ -31,13 +31,14 @@ public class Read {
 	
 	public String get(int begin,int end){
 		if(begin<end){
-			return sequence.substring(begin, end+1);
+			return sequence.substring(begin, end);
 		}
 		if(begin==end){
 			return "";
 		}
 		//System.out.println("B:"+begin+" E:"+end);
-		return complement(sequence.substring(end+1, begin));
+		StringBuilder b=new StringBuilder(complement(sequence.substring(end+1, begin))); 
+		return b.reverse().toString();
 	}
 	
 	public String toGFA(){
@@ -74,4 +75,3 @@ public class Read {
 	}
 	
 }
-

@@ -28,11 +28,12 @@ public class ChunkMaker {
 			return true;
 		}
 		
-		/*for(Edge e:currentChunk.lastVertex().getInEdges()){
+		/*for(Edge e:currentChunk.firstVertex().getInEdges()){
 			if(!vertices.contains(e.getStartVertex())){
 				continue;
 			}
-			currentChunk.vertices.add(e.getStartVertex());
+			currentChunk.vertices.add(0,e.getStartVertex());
+			currentChunk.edges.add(0,e);
 			vertices.remove(e.getStartVertex());
 			return true;
 		}*/

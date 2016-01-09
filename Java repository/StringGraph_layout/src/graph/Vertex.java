@@ -72,4 +72,3 @@ public class Vertex implements Iterable<Edge>{
 	}
 	
 }
-

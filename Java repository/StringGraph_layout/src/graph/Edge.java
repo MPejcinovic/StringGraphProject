@@ -16,6 +16,10 @@ public class Edge {
 	public boolean reduce;
 	private ArrayList<Edge> containedEdges=new ArrayList<>();
 	
+	public String toDNA(){
+		return read.get(beginIdx, endIdx);
+	}
+	
 	public String toGFA(){
 		return
 				"L\t"+
@@ -122,4 +126,3 @@ public class Edge {
 	}
 	
 }
-
