@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2014/W32TeX)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: project.aux
+The style file: tar2014.bst
+Database file #1: tar2014.bib
+Warning--empty journal in van2000graph
+You've used 8 entries,
+            2490 wiz_defined-function locations,
+            599 strings with 6242 characters,
+and the built_in function-call counts, 3757 in all, are:
+= -- 406
+> -- 121
+< -- 5
++ -- 41
+- -- 40
+* -- 250
+:= -- 569
+add.period$ -- 35
+call.type$ -- 8
+change.case$ -- 52
+chr.to.int$ -- 8
+cite$ -- 9
+duplicate$ -- 179
+empty$ -- 304
+format.name$ -- 49
+if$ -- 828
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 8
+newline$ -- 50
+num.names$ -- 24
+pop$ -- 71
+preamble$ -- 1
+purify$ -- 60
+quote$ -- 0
+skip$ -- 138
+stack$ -- 0
+substring$ -- 210
+swap$ -- 61
+text.length$ -- 5
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 64
+warning$ -- 1
+while$ -- 33
+width$ -- 12
+write$ -- 114
+(There was 1 warning)

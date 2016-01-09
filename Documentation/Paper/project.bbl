@@ -1,0 +1,68 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\citename{Biemann}2006]{biemann2006chinese}
+Chris Biemann.
+\newblock 2006.
+\newblock Chinese whispers: an efficient graph clustering algorithm and its
+  application to natural language processing problems.
+\newblock In {\em Proceedings of the first workshop on graph based methods for
+  natural language processing}, pages 73--80. Association for Computational
+  Linguistics.
+
+\bibitem[\protect\citename{Cui \bgroup et al.\egroup }2005]{cui2005document}
+Xiaohui Cui, Thomas~E Potok, and Paul Palathingal.
+\newblock 2005.
+\newblock Document clustering using particle swarm optimization.
+\newblock In {\em Swarm Intelligence Symposium, 2005. SIS 2005. Proceedings
+  2005 IEEE}, pages 185--191. IEEE.
+
+\bibitem[\protect\citename{Huang}2008]{huang2008similarity}
+Anna Huang.
+\newblock 2008.
+\newblock Similarity measures for text document clustering.
+\newblock In {\em Proceedings of the sixth new zealand computer science
+  research student conference (NZCSRSC2008), Christchurch, New Zealand}, pages
+  49--56.
+
+\bibitem[\protect\citename{Kanungo \bgroup et al.\egroup
+  }2002]{kanungo2002efficient}
+Tapas Kanungo, David~M Mount, Nathan~S Netanyahu, Christine~D Piatko, Ruth
+  Silverman, and Angela~Y Wu.
+\newblock 2002.
+\newblock An efficient k-means clustering algorithm: Analysis and
+  implementation.
+\newblock {\em Pattern Analysis and Machine Intelligence, IEEE Transactions
+  on}, 24(7):881--892.
+
+\bibitem[\protect\citename{Karam \bgroup et al.\egroup
+  }2002]{karam2002analysis}
+Omar~H Karam, Ahmed~M Hamad, and Sherin~M Moussa.
+\newblock 2002.
+\newblock Analysis of documents clustering using sampled agglomerative
+  technique.
+\newblock In {\em Proceedings, 12th International Conference on Computer Theory
+  and Applications}.
+
+\bibitem[\protect\citename{{\v{S}}{\'\i}ma and Schaeffer}2006]{vsima2006np}
+Ji{\v{r}}{\'\i} {\v{S}}{\'\i}ma and Satu~Elisa Schaeffer.
+\newblock 2006.
+\newblock On the np-completeness of some graph cluster measures.
+\newblock In {\em SOFSEM 2006: Theory and Practice of Computer Science}, pages
+  530--537. Springer.
+
+\bibitem[\protect\citename{Singh \bgroup et al.\egroup
+  }2011]{singh2011document}
+Vivek~Kumar Singh, Nisha Tiwari, and Shekhar Garg.
+\newblock 2011.
+\newblock Document clustering using k-means, heuristic k-means and fuzzy
+  c-means.
+\newblock In {\em Computational Intelligence and Communication Networks (CICN),
+  2011 International Conference on}, pages 297--301. IEEE.
+
+\bibitem[\protect\citename{Van~Dongen}2000]{van2000graph}
+S~Van~Dongen.
+\newblock 2000.
+\newblock Graph clustering by flow simulation [ph. d. thesis].[utrecht
+  (netherlands)]: University of utrecht.
+
+\end{thebibliography}
