@@ -14,10 +14,15 @@ public class Edge {
 	private int beginIdx;
 	private int endIdx;
 	public boolean reduce;
+	public final int type;
 	private ArrayList<Edge> containedEdges=new ArrayList<>();
 	
 	public String toDNA(){
-		return read.get(beginIdx, endIdx);
+		String DNA=read.get(beginIdx, endIdx);
+		for(Edge e:containedEdges){
+			DNA+=e.toDNA();
+		}
+		return DNA;
 	}
 	
 	public String toGFA(){
@@ -32,7 +37,7 @@ public class Edge {
 	
 	@Override
 	public String toString() {
-		return startVertex+"->"+endVertex+" LEN:"+length();//"Len:"+length();
+		return startVertex+"->"+endVertex+" TYPE:"+type+" LEN:"+length()+" CONT:"+containedEdges;//"Len:"+length();
 	//	return overlap.IDX+"";//+" LEN:"+length();
 	}
 	
@@ -70,7 +75,7 @@ public class Edge {
 		return endVertex;
 	}
 	
-	private int segmentLength(){
+	public int segmentLength(){
 		int l=beginIdx-endIdx;
 		if(l<0){
 			l=-l;
@@ -108,13 +113,14 @@ public class Edge {
 		edge.remove();
 	}
 	
-	public Edge(Vertex startVertex,Vertex endVertex,Overlap overlap,Read read,int beginIdx,int endIdx){
+	public Edge(Vertex startVertex,Vertex endVertex,Overlap overlap,Read read,int beginIdx,int endIdx,int type){
 		this.startVertex=startVertex;
 		this.endVertex=endVertex;
 		this.read=read;
 		this.overlap=overlap;
 		this.beginIdx=beginIdx;
 		this.endIdx=endIdx;
+		this.type=type;
 		startVertex.getOutEdges().add(this);
 		endVertex.getInEdges().add(this);
 		startVertex.sortEdges();

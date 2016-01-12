@@ -104,26 +104,26 @@ public class Graph implements Iterable<Vertex>{
 			if(overlap.g.begin<overlap.g.end){
 				//System.out.println("I1:"+overlap);
 				i1++;
-				new Edge(GB, FB,overlap, f, overlap.f.begin, 0);
-				new Edge(FE, GE,overlap, g, overlap.g.end, g.length());
+				new Edge(GB, FB,overlap, f, overlap.f.begin, 0,1);
+				new Edge(FE, GE,overlap, g, overlap.g.end, g.length(),1);
 			}else{
 				//System.out.println("I2:"+overlap);
 				i2++;
-				new Edge(GE, FB,overlap, f, overlap.f.begin, 0);
-				new Edge(FE, GB, overlap,g, overlap.g.end, 0);
+				new Edge(GE, FB,overlap, f, overlap.f.begin, 0,21);
+				new Edge(FE, GB, overlap,g, overlap.g.end, 0,22);
 			}
 		}
 		else{
 			if(overlap.g.begin<overlap.g.end){
 				//System.out.println("I3:"+overlap);
 				i3++;
-				new Edge(FB, GB, overlap,g, overlap.g.begin, 0);
-				new Edge(GE, FE, overlap,f, overlap.f.end, f.length());
+				new Edge(FB, GB, overlap,g, overlap.g.begin, 0,3);
+				new Edge(GE, FE, overlap,f, overlap.f.end, f.length(),3);
 			}else{
 				//System.out.println("I4:"+overlap);
 				i4++;
-				new Edge(FB, GE,overlap, g, g.length(), overlap.g.begin);
-				new Edge(GB, FE, overlap,f, overlap.f.end, f.length());
+				new Edge(FB, GE,overlap, g, overlap.g.begin,g.length(),4);
+				new Edge(GB, FE, overlap,f, overlap.f.end, f.length(),4);
 			}
 		}
 	}
