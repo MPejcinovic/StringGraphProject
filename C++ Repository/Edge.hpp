@@ -2,44 +2,56 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include "Read.hpp"
+#include "Overlap.hpp"
 
 class Vertex;
 
 class Edge {
     
-public:
+private:
+    Vertex *startVertex;
+    Vertex *endVertex;
+    Read *read;
+    Overlap *overlap;
+    int beginIdx;
+    int endIdx;
+    int type;
+    std::vector<Edge*> containedEdges;
     
-    void addEdge(Edge *edge);
+public:
+    bool reduce;
+
+    std::string toDNA();
+    Edge(Vertex *startVertex,Vertex *endVertex,Overlap *overlap,Read *read,int beginIdx,int endIdx,int type);
+    
+    std::string toGFA();
+    
+    std::string toString();
+    
+    std::vector<Overlap*> getOverlaps();
+    
+    Overlap* getOverlap();
+    
+    bool hasContainedEdges();
+    
+    int hashCode();
+    
+    Vertex* getStartVertex();
+    
+    Read* getRead();
+    
+    Vertex* getEndVertex();
+    
+    int segmentLength();
+    
+    int numContainedEdges();
+    
+    int length();
     
     void remove();
     
-    std::string toString();
-    void addToVertices();
-    bool hasInteriorVertices(){
-        return labelIDs.size()>1;
-    }
+    void addEdge(Edge *edge);
     
-    Edge(Vertex* startVertex,Vertex* endVertex,int labelID,int labelBegin,int labelEnd,int overlapIDX):endVertex(endVertex),startVertex(startVertex){
-        this->overlapIDX=overlapIDX;
-        labelIDs.push_back(labelID);
-        labelBegins.push_back(labelBegin);
-        labelEnds.push_back(labelEnd);
-        length=labelBegin-labelEnd;
-        if(length<0){
-            length=-length;
-        }
-        addToVertices();
-    }
-    
-    Vertex *startVertex;
-    Vertex *endVertex;
-    int overlapIDX;
-    std::vector<int> labelIDs;
-    std::vector<int> labelBegins;
-    std::vector<int> labelEnds;
-    int length;
-    int mark;
-    
-    
-    
+    bool hasInteriorVertices();
 };

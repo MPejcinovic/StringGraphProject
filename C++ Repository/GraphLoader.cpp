@@ -5,7 +5,7 @@
 #include <iostream>
 #include <sstream>
 
-void GraphLoader::getOverlaps(std::string fileName,int& numReads,std::vector<Overlap>& overlaps, std::unordered_set<int>& containedIDs){
+/*void GraphLoader::getOverlaps(std::string fileName,int& numReads,std::vector<Overlap>& overlaps, std::unordered_set<int>& containedIDs){
     std::ifstream in_stream;
     in_stream.open(fileName);
     numReads=0;
@@ -61,4 +61,4 @@ void GraphLoader::getOverlaps(std::string fileName,int& numReads,std::vector<Ove
         idx++;
     }
     in_stream.close();
-}
+}*/
