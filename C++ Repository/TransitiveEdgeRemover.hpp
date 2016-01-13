@@ -2,147 +2,154 @@
 
 #pragma once
 #include "Graph.hpp"
-#include "DebugPrint.hpp"
+#include <map>
 
-#define MARK_VACANT 0
-#define MARK_INPLAY 1
-#define MARK_ELIMINATED 2
+#define VACANT 0
+#define INPLAY 1
+#define ELIMINATED 2
 
 #define NO_REDUCE 0
 #define REDUCE 1
-
+#define FUZZ 10
 
 class TransitiveEdgeRemover {
     
 private:
-    Graph& graph;
+    
     int count1=0;
     int count2=0;
+    Graph *graph;
+    std::map<Vertex*, int> vertexMarks;
+    //private HashMap<Edge, Boolean> edgeToReduce;
     
-public:
-    static int FUZZ;
-        
-    void prepareData(){
-        for(auto& entry:graph.idToVertexMap){
-            entry.second->mark=MARK_VACANT;
-            for(Edge *edge :entry.second->edges){
-                edge->mark=NO_REDUCE;
-            }
-        }
+    int mark(Vertex *v){
+        return vertexMarks[v];
     }
     
-    int prepareVertex(Vertex *V){
-        int maxLen=0;
-        for(Edge *VW :V->edges){
-            Vertex *W=VW->endVertex;
-            W->mark=MARK_INPLAY;
-            if(VW->length>maxLen){
-                maxLen=VW->length;
-            }
-        }
-        return maxLen;
+    void mark(Vertex *v,int m){
+        vertexMarks[v]=m;
     }
     
-    void removeTransitiveEdges(Vertex *V,int maxLen){
-        for(Edge *VW :V->edges){
-            Vertex *W=VW->endVertex;
-            if(W->mark!=MARK_INPLAY){
+    void removeTransitiveEdges(Vertex *v,int maxLen){
+        v->sortEdges();
+        for(Edge *vw:v->getOutEdges()){
+            Vertex *w=vw->getEndVertex();
+            w->sortEdges();
+            if(mark(w)!=INPLAY){
                 continue;
             }
-            for(Edge *WX : W->edges){
-                if(VW->length+WX->length>maxLen){
+            
+            for(Edge *wx:w->getOutEdges()){
+                if(vw->length()+wx->length()>maxLen){
                     break;
                 }
-                Vertex *X=WX->endVertex;
-                if(X->mark==MARK_INPLAY){
-                    DebugPrint::print("Marking vertex(removeTransitiveEdges) V:"+std::to_string(V->id) +"X:"+std::to_string(X->id)+"\n");
+                Vertex *x=wx->getEndVertex();
+                if(mark(x)==INPLAY){
                     count1++;
-                    X->mark=MARK_ELIMINATED;
+                    mark(x,ELIMINATED);
                 }
             }
         }
     }
     
-    void removeShortEdges(Vertex *V){
-        for(Edge *VW :V->edges){
-            Vertex *W=VW->endVertex;
-            DebugPrint::print(V->toString());
-            DebugPrint::print(W->toString());
+    void removeShortEdges(Vertex *v){
+        for(Edge *vw :v->getOutEdges()){
+            Vertex *w=vw->getEndVertex();
             int numIter=0;
-            for(Edge *WX : W->edges){
-                Vertex *X=WX->endVertex;
+            //w.sortEdges();
+            for(Edge *wx : w->getOutEdges()){
+                Vertex *x=wx->getEndVertex();
                 numIter++;
-                if(X->mark!=MARK_INPLAY){
-                    DebugPrint::print("Skipping vertex:"+std::to_string(X->id)+"\n");
+                if(mark(x)!=INPLAY){
                     continue;
                 }
                 if(numIter==1){
-                    DebugPrint::print("Marking vertex(removeShortEdges numIter=1) V:"+std::to_string(V->id)+" X:"+std::to_string(X->id)+"\n");
                     count2++;
-                    X->mark=MARK_ELIMINATED;
+                    mark(x,ELIMINATED);
                 }
-                else if(WX->length<FUZZ){
-                    DebugPrint::print("Marking vertex(removeShortEdges fuzz) V:"+std::to_string(V->id)+" X:"+std::to_string(X->id)+"\n");
+                else if(wx->length()<FUZZ){
                     count2++;
-                    X->mark=MARK_ELIMINATED;
+                    mark(x,ELIMINATED);
                 }
-                else if (WX->length>=FUZZ){
+                else if (wx->length()>=FUZZ){
                     break;
                 }
             }
         }
     }
     
-    void markEliminatedEdgesAndReset(Vertex *V){
-        for(Edge *VW :V->edges){
-            Vertex *W=VW->endVertex;
-            if(W->mark==MARK_ELIMINATED){
-                VW->mark=REDUCE;
-            }
-            W->mark=MARK_VACANT;
+    void prepareVertex(Vertex *v){
+        v->sortEdges();
+        for(Edge *vw:v->getOutEdges()){
+            Vertex *w=vw->getEndVertex();
+            mark(w, INPLAY);
         }
     }
     
-    void processVertex(Vertex *V){
-        int maxLen=prepareVertex(V);
-        maxLen+=FUZZ;
-        removeTransitiveEdges(V, maxLen);
-        removeShortEdges(V);
-        markEliminatedEdgesAndReset(V);
+    void markEliminatedEdgesAndReset(Vertex *v){
+        for(Edge *vw :v->getOutEdges()){
+            Vertex *w=vw->getEndVertex();
+            if(mark(w)==ELIMINATED){
+                vw->reduce=true;
+                //edgeToReduce.put(vw, true);
+            }
+            mark(w,VACANT);
+        }
+    }
+    
+    
+    void processVertex(Vertex *v){
+        prepareVertex(v);
+        int maxLen=200000000;
+        if(v->getOutEdges().size()!=0){
+            maxLen=v->getOutEdges()[v->getOutEdges().size()-1]->length()+FUZZ;
+        }
+        removeTransitiveEdges(v, maxLen);
+        removeShortEdges(v);
+        markEliminatedEdgesAndReset(v);
     }
     
     void removeReducedEdges(){
-        for(auto& entry:graph.idToVertexMap){
-            Vertex *V=entry.second;
-            auto iterator=V->edges.begin();
-            while(iterator!=V->edges.end()){
-                Edge *VW=*iterator;
-                Vertex *W=VW->endVertex;
-                if(VW->mark==REDUCE){
-                    DebugPrint::print("Removing edge:");
-                    DebugPrint::print(VW->toString());
-                    iterator=V->edges.erase(iterator);
-                    W->inEdges.erase(std::remove(W->inEdges.begin(), W->inEdges.end(), VW));
-                    delete VW;
-                }else{
-                    ++iterator;
+        for(Vertex *v:graph->vertices){
+            auto it=v->getOutEdges().begin();
+            while(it!=v->getOutEdges().end()){
+                Edge *e=*it;
+                /*if(!edgeToReduce.get(e)){
+                 continue;
+                 }*/
+                if(!e->reduce){
+                    ++it;
+                    continue;
                 }
+                //System.out.println("REMOVED EDGE:"+e);
+                it=v->getOutEdges().erase(it);
+                e->getEndVertex()->getInEdges().erase(std::find(e->getEndVertex()->getInEdges().begin(), e->getEndVertex()->getInEdges().end(), e));
             }
         }
     }
     
+public:
     void process(){
-        DebugPrint::print(graph.toString());
-        prepareData();
-        for(auto& entry:graph.idToVertexMap){
-            processVertex(entry.second);
+        //edgeToReduce=new HashMap<>();
+        for(Vertex *v:graph->vertices){
+            vertexMarks[v]=VACANT;
+            for(Edge *e:v->getOutEdges()){
+                /*if(edgeToReduce.get(e)!=null){
+                 System.out.println("AAA");
+                 }*/
+                e->reduce=false;
+                //edgeToReduce.put(e, false);
+            }
         }
-        std::cout <<"Count1:"<<count1<<"\n";
-        std::cout <<"Count2:"<<count2<<"\n";
+        for(Vertex *v:graph->vertices){
+            processVertex(v);
+        }
+        std::cout <<"Transitive removed:" <<count1 << "\n";
+        std::cout <<"Short removed:" <<count2 << "\n";
         removeReducedEdges();
     }
     
-    TransitiveEdgeRemover(Graph&graph):graph(graph){
-        
+    TransitiveEdgeRemover(Graph *graph){
+        this->graph=graph;
     }
 };

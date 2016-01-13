@@ -5,59 +5,64 @@
 #include "Edge.hpp"
 #include <iostream>
 #include <sstream>
+#include <string>
+#include "Read.hpp"
 
 class Vertex {
     
-public:
-    int id;
-    char mark;
-    bool isBegin;
-    std::vector<Edge*> edges;
+private:
+    Read *read;
+    std::vector<Edge*> outEdges;
     std::vector<Edge*> inEdges;
+
+public:
+    bool BEGIN;
     
-    int getHash(){
-        if(isBegin){
-            return id;
-        }
-        return -id;
-    }
-    
-    std::string toString(){
+    std::string toGFA(){
         std::stringstream ss;
-        ss <<"Vertex:"<<id << " Reversed:" << isBegin <<"\n";
-        ss <<"In edges:\n";
-        for(Edge* edge :inEdges){
-            ss<<edge->toString();
-        }
-        ss <<"Out edges:";
-        for(Edge* edge :edges){
-            ss<<edge->toString();
-        }
+        ss << "S " << read->getID() << " " << read->sequence;
         return ss.str();
     }
     
-    ~Vertex(){
-        for(Edge *edge:edges){
-            delete edge;
-        }
+    
+    std::string toString() {
+        std::stringstream ss;
+        ss << read->getID() << (BEGIN?".B":".E");
+        return ss.str();
     }
     
-    void addEdge(Edge* edge){
-        edges.push_back(edge);
+    Read* getRead(){
+        return read;
+    }
+    
+    static int hash(Read *read,bool BEGIN){
+        return read->hashCode()*(BEGIN?1:-1);
+    }
+    
+    int hashCode() {
+        return hash(getRead(), BEGIN);
+    }
+    
+    std::vector<Edge*>& getOutEdges(){
+        return outEdges;
+    }
+    
+    std::vector<Edge*>& getInEdges(){
+        return inEdges;
+    }
+    
+    Vertex(Read *read,bool BEGIN) {
+        this->read=read;
+        this->BEGIN=BEGIN;
     }
     
     static bool sortFunction(Edge* i,Edge *j){
-        return i->length<j->length;
+        return i->length()<j->length();
     }
     
     void sortEdges(){
-        //std::cout << "SB\n";
-        std::sort(edges.begin(),edges.end(),sortFunction);
-        /*for(Edge* edge :edges){
-            std::cout <<edge->length <<"\n";
-        }
-        std::cout << "SE\n";*/
-
+        std::sort(outEdges.begin(),outEdges.end(),sortFunction);
+        std::sort(inEdges.begin(),inEdges.end(),sortFunction);
     }
     
 };
