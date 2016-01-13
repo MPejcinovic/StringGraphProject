@@ -9,47 +9,130 @@ import graph.Edge;
 import graph.Graph;
 import graph.Vertex;
 import overlap.Overlap;
+import overlap.Read;
 
 public class ChunkMaker {
 
+	private static final int MIN_LENGTH=800;
+	private static final int MAX_LENGTH=14000;
 	private Chunk currentChunk;
 	private Graph graph;
+	private HashSet<Read> unusedReads;
 	public ArrayList<Vertex> vertices;
 	public ArrayList<Chunk> chunks=new ArrayList<>();
 	
-	private boolean incrementChunk(){
-		for(Edge e:currentChunk.lastVertex()){
-			if(!vertices.contains(e.getEndVertex())){
-				continue;
+	private void vertexAdded(Vertex v){
+		int r=0;
+		for(int i=0;i<vertices.size();i++){
+			if(vertices.get(i).getRead()==v.getRead()){
+				vertices.remove(i);
+				i--;
+				r++;
 			}
-			currentChunk.vertices.add(e.getEndVertex());
-			currentChunk.edges.add(e);
-			vertices.remove(e.getEndVertex());
-			return true;
+		}
+	}
+	
+	private void addToCurrentChunkEnd(Vertex v){
+		currentChunk.vertices.add(v);
+		vertexAdded(v);
+	}
+
+	private void addToCurrentChunkBegin(Vertex v){
+		currentChunk.vertices.add(0,v);
+		vertexAdded(v);
+	}
+
+	private boolean incrementChunk(){
+		ArrayList<Edge> outEdges=new ArrayList<>(currentChunk.lastVertex().getOutEdges());
+		outEdges.sort(new Comparator<Edge>() {
+
+			@Override
+			public int compare(Edge o1, Edge o2) {
+				if(o1.length()<o2.length()){
+					return -1;
+				}
+				if(o1.length()==o2.length()){
+					return 0;
+				}
+				return 1;
+			}
+		});
+
+		if(true){
+			for(Edge e:outEdges){
+				int len=e.segmentLength();
+				if(len<MIN_LENGTH||len>MAX_LENGTH){
+					continue;
+				}
+				if(!vertices.contains(e.getEndVertex())){
+					continue;
+				}
+				addToCurrentChunkEnd(e.getEndVertex());
+				currentChunk.edges.add(e);
+				return true;
+			}
 		}
 		
-		/*for(Edge e:currentChunk.firstVertex().getInEdges()){
-			if(!vertices.contains(e.getStartVertex())){
-				continue;
+		ArrayList<Edge> inEdges=new ArrayList<>(currentChunk.firstVertex().getInEdges());
+		inEdges.sort(new Comparator<Edge>() {
+
+			@Override
+			public int compare(Edge o1, Edge o2) {
+				if(o1.length()<o2.length()){
+					return -1;
+				}
+				if(o1.length()==o2.length()){
+					return 0;
+				}
+				return 1;
 			}
-			currentChunk.vertices.add(0,e.getStartVertex());
-			currentChunk.edges.add(0,e);
-			vertices.remove(e.getStartVertex());
-			return true;
-		}*/
+		});
+		if(true){
+			for(Edge e:inEdges){
+				int len=e.segmentLength();
+				if(len<MIN_LENGTH||len>MAX_LENGTH){
+					continue;
+				}
+				if(!vertices.contains(e.getStartVertex())){
+					continue;
+				}
+				addToCurrentChunkBegin(e.getStartVertex());
+				currentChunk.edges.add(0,e);
+				return true;
+			}
+
+		}
 
 		return false;
 	}
 		
 	public void process(){
+		unusedReads=new HashSet<>(graph.getReads());
 		vertices=new ArrayList<>(graph.getVertices());
 		while(vertices.size()!=0){
+			int maxIdx=0;
+			int maxLen=-1;
+			ArrayList<Vertex> vCopy=new ArrayList<>(vertices);
+			for(int i=0;i<vertices.size();i++){
+				currentChunk=new Chunk();
+				addToCurrentChunkEnd(vertices.get(i));
+				while(incrementChunk()){
+				}
+				int size=currentChunk.size();
+				if(maxLen==-1||size>maxLen){
+					maxIdx=i;
+					maxLen=size;
+				}
+				vertices=new ArrayList<>(vCopy);
+			}
+			vertices=new ArrayList<>(vCopy);
 			currentChunk=new Chunk();
-			currentChunk.vertices.add(vertices.get(0));
-			chunks.add(currentChunk);
-			vertices.remove(0);
+			addToCurrentChunkEnd(vertices.get(maxIdx));
 			while(incrementChunk()){
 			}
+			chunks.add(currentChunk);
+			
+			//break;
 		}
 		chunks.sort(new Comparator<Chunk>() {
 

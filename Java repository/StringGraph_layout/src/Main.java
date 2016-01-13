@@ -44,9 +44,9 @@ public class Main {
 	private static void write45() throws IOException{
 		BufferedWriter writer=new BufferedWriter(new FileWriter("chunks45.gfa"));
 		//int[] arr=new int[]{3,-2,10,-35,31,19,34,-20,14,-60,-49,6,8,-4,17,-7,-0,11,25,-18,-23,-16,-42,30,-40,39,32};
-		int[] arr=new int[]{3,-2,9,4,36,-34,22,10,-20,39,-25,17,11,6,-5,7,30,-12,-1,15,-23,-32,-21,24,-8,-19,-25,44,38,42};
+		//int[] arr=new int[]{3,-2,9,4,36,-34,22,10,-20,39,-25,17,11,6,-5,7,30,-12,-1,15,-23,-32,-21,24,-8,-19,-25,44,38,42};
 
-		//int[] arr=new int[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14};
+		int[] arr=new int[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14};
 		System.out.println("LEN"+arr.length);
 		for(int i=0;i<arr.length;i++){
 			int idx=arr[i];		
@@ -64,6 +64,51 @@ public class Main {
 		writer.close();
 	}
 
+	private static void write45All() throws IOException{
+		BufferedWriter writer=new BufferedWriter(new FileWriter("chunks45.gfa"));
+		for(int i=0;i<chunkMaker.chunks.size();i++){
+			Chunk cr=chunkMaker.chunks.get(i);
+			cr.idx=i;
+			if(cr.edges.size()!=0){
+				StringBuilder GFA=new StringBuilder(cr.toGFA());
+				GFA.append("\n");
+				writer.write("S\t"+(i)+"\t"+GFA.toString());
+			}
+		}
+		writer.close();
+	}
+
+	private static void test() throws IOException{
+		BufferedWriter writer=new BufferedWriter(new FileWriter("chunks45.gfa"));
+		int[] chunks=new int[]{0,12,-1,-8,-5,1,2,-0,-4,1,-7,9,-3,-6,11,-2,-1,7,-10,-5,14,0};
+		int[] begins=new int[]{543250,0,0,0,0,300000,300000,1260340,0,0,160000,0,0,0,0,0,660000,0,0,110000,0,0};
+		int[] ends=new int[]{1282070,0,100000,0,100000,700000,0,0,0,230000,0,0,0,0,0,315000,0,150000,0,0,0,543250};
+		
+		for(int i=0;i<chunks.length;i++){
+			int idx=chunks[i];
+			Chunk cr=chunkMaker.chunks.get(Math.abs(idx));
+			cr.idx=i;
+			int begin=begins[i];
+			int end=ends[i];
+			if(end==0){
+				end=cr.size();
+			}
+			StringBuilder GFA=new StringBuilder(cr.toGFA());
+			String s=null;
+			if(i==0||idx>0||i==chunks.length-1){
+				s=GFA.substring(begin, end);
+			}else{
+				StringBuilder b=new StringBuilder(Read.complement(GFA.substring(begin, end)));
+				b.reverse();
+				s=b.toString();
+			}
+			GFA=new StringBuilder(s);
+			GFA.append("\n");
+			writer.write("S\t"+(i)+"\t"+GFA.toString());
+		}
+		writer.close();
+	}
+
 	public static void main(String[] args) throws IOException {
 		GraphLoader loader=new GraphLoader();
 		
@@ -71,28 +116,25 @@ public class Main {
 		System.out.println("Memory:"+(Runtime.getRuntime().totalMemory()/(1024*1024)));
 
 		System.out.println("After containment:"+graph);
-		GraphComparator.compareGraph(graph, filePath, solutionPath);
 		
 		TransitiveEdgeRemover transitiveEdgeRemover=new TransitiveEdgeRemover(graph);
 		transitiveEdgeRemover.process();
 		System.out.println("After transitive:"+graph);
 		graph.removeEmptyVertices();
 		System.out.println("After removing empty:"+graph);
-		GraphComparator.compareGraph(graph, filePath, solutionPath);
 
 		System.out.println("Memory:"+(Runtime.getRuntime().totalMemory()/(1024*1024)));
 		
 		InternalVertexRemover internalVertexRemover=new InternalVertexRemover(graph);
-		//internalVertexRemover.process();
+		internalVertexRemover.process();
 		System.out.println("After internalVertexRemover:"+graph);
 		graph.removeEmptyVertices();
 		System.out.println("After removing empty:"+graph);
-		GraphComparator.compareGraph(graph, filePath, solutionPath);
 
 		System.out.println("Memory:"+(Runtime.getRuntime().totalMemory()/(1024*1024)));
 
 		NetworkFlowAnalyzer networkFlowAnalyzer=new NetworkFlowAnalyzer(graph);
-		//networkFlowAnalyzer.process();
+		networkFlowAnalyzer.process();
 		System.out.println(graph);
 		graph.removeEmptyVertices();
 		System.out.println(graph);
@@ -100,15 +142,33 @@ public class Main {
 
 		chunkMaker=new ChunkMaker(graph);
 		chunkMaker.process();
-		write45();
+		test();
+		int size=0;
+		int a=0;
+		for(Chunk c:chunkMaker.chunks){
+			//System.out.println(c.size());
+			size+=c.size();
+			if(c.edges.size()==0){
+				a++;
+			}
+		}
+		System.out.println("Ove vertex chunks:"+a);
+		System.out.println(chunkMaker.chunks.get(0));
+		System.out.println("All size:"+size);
+		int N50=0;
+		int lastSize=0;
 		for(Chunk c:chunkMaker.chunks){
 			System.out.println(c.size());
+			N50+=c.size();
+			lastSize=c.size();
+			if(N50>0.5*size){
+				break;
+			}
 		}
+		System.out.println("N50:"+lastSize);
 		System.out.println("Memory:"+(Runtime.getRuntime().totalMemory()/(1024*1024)));
 
 		System.out.println("Number of chunks:"+chunkMaker.chunks.size());
-		double eval=GraphComparator.compareGraph(graph, filePath, solutionPath);
-		GraphComparator.saveGraph(graph, filePath, savePath+"-"+eval+".mhap");
 	}
 
 }
