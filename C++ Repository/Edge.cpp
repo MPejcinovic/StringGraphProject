@@ -1,5 +1,6 @@
 
 
+#pragma once
 #include "Edge.hpp"
 #include "Vertex.hpp"
 #include <sstream>

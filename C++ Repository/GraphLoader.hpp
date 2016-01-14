@@ -143,32 +143,32 @@ public:
         }
         
         file.close();
-        file=std::ifstream(readsFilePath);
+        std::ifstream readsFile(readsFilePath);
         int readID=1;
-        while(std::getline(file, line)){
+        while(std::getline(readsFile, line)){
             if(reads.find(readID)==reads.end()){
-                std::getline(file, line);
-                std::getline(file, line);//+
-                std::getline(file, line);//,+,+,+,+,
+                std::getline(readsFile, line);
+                std::getline(readsFile, line);//+
+                std::getline(readsFile, line);//,+,+,+,+,
                 readID++;
                 continue;
             }
             Read *read=reads.find(readID)->second;
             if(containedReads.find(read)!=containedReads.end()){
-                std::getline(file, line);
-                std::getline(file, line);//+
-                std::getline(file, line);//,+,+,+,+,
+                std::getline(readsFile, line);
+                std::getline(readsFile, line);//+
+                std::getline(readsFile, line);//,+,+,+,+,
                 readID++;
                 continue;
             }
-            std::getline(file, line);
+            std::getline(readsFile, line);
             read->sequence=line;
-            std::getline(file, line);//+
-            std::getline(file, line);//,+,+,+,+,
+            std::getline(readsFile, line);//+
+            std::getline(readsFile, line);//,+,+,+,+,
             readID++;
         }
         
-        file.close();
+        readsFile.close();
         
         std::cout << "Num reads:" << reads.size() << "\n";
         std::cout << "Num overlaps:" << overlaps.size()<< "\n";
