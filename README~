@@ -4,10 +4,13 @@ The goal is to implement the layout phase:
 2) Remove transitive edges
 3) Create chunks
 
+Test data and results:
+https://www.dropbox.com/sh/h13mods016fr7ku/AADiTX9677IYCAJexP8wUOIpa?dl=0
+
 The results will be compared using Bandage and Gepard tools.
 
 The team consists of two students:
 	-Matea Pejčinović (MPejcinovic)
-	-FRan Stanić (Meshtar)
+	-Fran Stanić (Meshtar)
 
 This project was created during our master study on Faculty of Electrical Engineering and Computing, University of Zagreb.
