@@ -1,14 +1,16 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
 
 import chunk.Chunk;
 import chunk.ChunkMaker;
+import graph.Edge;
 import graph.Graph;
+import graph.Vertex;
 import graph.operations.InternalVertexRemover;
 import graph.operations.NetworkFlowAnalyzer;
 import graph.operations.TransitiveEdgeRemover;
-import io.GraphComparator;
 import io.GraphLoader;
 import overlap.Read;
 
@@ -19,7 +21,7 @@ public class Main {
 	private static final String savePath="output";
 	private static final String readsFileName="reads.fq";
 	private static ChunkMaker chunkMaker;
-	
+	private static Graph graph;
 	
 	private static void write60() throws IOException{
 		BufferedWriter writer=new BufferedWriter(new FileWriter("chunks60.gfa"));
@@ -81,8 +83,8 @@ public class Main {
 	private static void test() throws IOException{
 		BufferedWriter writer=new BufferedWriter(new FileWriter("chunks45.gfa"));
 		int[] chunks=new int[]{0,12,-1,-8,-5,1,2,-0,-4,1,-7,9,-3,-6,11,-2,-1,7,-10,-5,14,0};
-		int[] begins=new int[]{543250,0,0,0,0,300000,300000,1260340,0,0,160000,0,0,0,0,0,660000,0,0,110000,0,0};
-		int[] ends=new int[]{1282070,0,100000,0,100000,700000,0,0,0,230000,0,0,0,0,0,315000,0,150000,0,0,0,543250};
+		int[] begins=new int[]{543250,0,0,0,0,300000,300000,1260340,0,75000,160000,0,0,0,0,0,660000,0,0,110000,0,0};
+		int[] ends=new int[]{1262070,0,100000,0,100000,700000,0,0,0,300000,0,0,0,0,0,315000,0,150000,0,0,0,543250};
 		
 		for(int i=0;i<chunks.length;i++){
 			int idx=chunks[i];
@@ -109,10 +111,37 @@ public class Main {
 		writer.close();
 	}
 
-	public static void main(String[] args) throws IOException {
+	private static void writeBandageChunks() throws Exception{
+		BufferedWriter w=new BufferedWriter(new FileWriter("bandage-chunks.gfa"));
+		w.write("H\tVN:Z:1.0\n");
+		HashSet<Read> reads=new HashSet<>();
+		for(Chunk c:chunkMaker.chunks){
+			for(Vertex v:c.vertices){
+				if(!reads.contains(v.getRead())){
+					w.write(v.getRead().toGFA());
+					w.write("\n");
+				}
+				reads.add(v.getRead());
+			}
+			for(Edge e:c.edges){
+				w.write(e.toGFARecursive());
+				w.write("\n");
+			}
+		}
+		w.close();
+	}
+
+	private static void writeBandageGraph() throws Exception{
+		BufferedWriter w=new BufferedWriter(new FileWriter("bandage-graph.gfa"));
+		w.write(graph.toGFA());
+		w.close();
+	}
+	
+	public static void main(String[] args) throws Exception {
 		GraphLoader loader=new GraphLoader();
-		
-		Graph graph=loader.getGraph(filePath,readsFileName);
+		System.out.println("Memory:"+(Runtime.getRuntime().totalMemory()/(1024*1024)));
+
+		graph=loader.getGraph(filePath,readsFileName);
 		System.out.println("Memory:"+(Runtime.getRuntime().totalMemory()/(1024*1024)));
 
 		System.out.println("After containment:"+graph);
@@ -120,6 +149,7 @@ public class Main {
 		TransitiveEdgeRemover transitiveEdgeRemover=new TransitiveEdgeRemover(graph);
 		transitiveEdgeRemover.process();
 		System.out.println("After transitive:"+graph);
+		//System.exit(0);
 		graph.removeEmptyVertices();
 		System.out.println("After removing empty:"+graph);
 
@@ -142,7 +172,9 @@ public class Main {
 
 		chunkMaker=new ChunkMaker(graph);
 		chunkMaker.process();
-		test();
+		write45All();
+		writeBandageChunks();
+		writeBandageGraph();
 		int size=0;
 		int a=0;
 		for(Chunk c:chunkMaker.chunks){

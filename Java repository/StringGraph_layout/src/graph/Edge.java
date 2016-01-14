@@ -18,12 +18,24 @@ public class Edge {
 	private ArrayList<Edge> containedEdges=new ArrayList<>();
 	
 	public String toDNA(){
+		//System.out.println(read);
+		//System.out.println(overlap);
 		String DNA=read.get(beginIdx, endIdx);
 		for(Edge e:containedEdges){
 			DNA+=e.toDNA();
 		}
 		return DNA;
 	}
+	
+	public String toGFARecursive(){
+		String GFA=toGFA();
+		for(Edge e:containedEdges){
+			GFA=GFA+"\n";
+			GFA=GFA+e.toGFARecursive();
+		}
+		return GFA;
+	}
+
 	
 	public String toGFA(){
 		return
@@ -75,6 +87,60 @@ public class Edge {
 		return endVertex;
 	}
 	
+	public int maxLength(){
+		int max=segmentLength();
+		for(Edge e:containedEdges){
+			if(e.maxLength()>max){
+				max=e.maxLength();
+			}
+		}
+		return max;
+	}
+
+	public double minLo(){
+		double min=1.0*overlap.size()/read.length();
+		for(Edge e:containedEdges){
+			if(e.minLo()<min){
+				min=e.minLo();
+			}
+		}
+		//System.out.println(min);
+		return min;
+	}
+
+	public double maxLo(){
+		double max=1.0*overlap.size()/read.length();
+		for(Edge e:containedEdges){
+			if(e.maxLo()>max){
+				max=e.maxLo();
+			}
+		}
+		//System.out.println(max);
+		return max;
+	}
+	
+	public int maxSegmentLength(){
+		int max=segmentLength();
+		for(Edge e:containedEdges){
+			if(e.maxSegmentLength()>max){
+				max=e.maxSegmentLength();
+			}
+		}
+		return max;
+	}
+	
+	public int minSegmentLength(){
+		int min=segmentLength();
+		for(Edge e:containedEdges){
+			if(e.minSegmentLength()<min){
+				min=e.minSegmentLength();
+			}
+		}
+		return min;
+	}
+
+
+
 	public int segmentLength(){
 		int l=beginIdx-endIdx;
 		if(l<0){
