@@ -11,6 +11,7 @@ public class TransitiveEdgeRemover {
 
 	private static int FUZZ=10;
 	
+	//marks for edges
 	private enum Mark{
 		INPLAY,
 		VACANT,
@@ -31,6 +32,8 @@ public class TransitiveEdgeRemover {
 		vertexMarks.put(v, m);
 	}
 
+
+ //sort edges and mark all that are marked INPLAY as ELIMINATED
 	private void removeTransitiveEdges(Vertex v,int maxLen){
 		v.sortEdges();
 		for(Edge vw:v){
@@ -53,6 +56,7 @@ public class TransitiveEdgeRemover {
 		}
 	}
 
+ //sort edges and mark all that are marked INPLAY as ELIMINATED
 	private void removeTransitiveEdges2(Vertex v,int maxLen){
 		v.sortEdges();
 		for(Edge vw:v){
@@ -73,6 +77,7 @@ public class TransitiveEdgeRemover {
 		}
 	}
 
+	//get rid of short edges (mark them as ELIMINATED)
 	private void removeShortEdges(Vertex v){
         for(Edge vw :v){
             Vertex w=vw.getEndVertex();
@@ -114,7 +119,7 @@ public class TransitiveEdgeRemover {
         }
 	}
 
-	
+	//first step, mark vertices as INPLAY
     private void prepareVertex(Vertex v){
     	v.sortEdges();
         for(Edge vw:v){

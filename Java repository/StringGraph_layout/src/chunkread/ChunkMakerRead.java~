@@ -43,7 +43,7 @@ public class ChunkMakerRead {
 		
 	}
 	
-	//creating chunk reads by adding reads to chunkread; they are being sorted by their size
+	//creating chunk reads by adding reads to chunkread; they are being sorted by their site
 	public void process(){
 		overlaps=graph.getOverlaps();
 		reads=graph.getReads();

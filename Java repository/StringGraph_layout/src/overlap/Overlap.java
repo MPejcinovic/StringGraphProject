@@ -6,6 +6,7 @@ public class Overlap {
 	public OverlapPart f;
 	public OverlapPart g;
 			
+	//getting overhangs for overlap; parts that are on the left and right side of the overlap
 	public String getLeftOverhang(){
 		return leftPart().getOverhang();
 	}
@@ -44,7 +45,8 @@ public class Overlap {
 	}
 	
 	private static int i=0;
-	
+
+	//returning reads that are contained in graph	
 	public Read getContainedRead(){
 		if(g.isContainment()&&f.isContainment()){
 			i++;

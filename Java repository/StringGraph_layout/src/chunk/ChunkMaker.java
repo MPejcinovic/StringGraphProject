@@ -21,6 +21,7 @@ public class ChunkMaker {
 	public ArrayList<Vertex> vertices;
 	public ArrayList<Chunk> chunks=new ArrayList<>();
 	
+	//method for adding vertex
 	private void vertexAdded(Vertex v){
 		int r=0;
 		for(int i=0;i<vertices.size();i++){
@@ -32,16 +33,19 @@ public class ChunkMaker {
 		}
 	}
 	
+	//adding vertex to the end of chunk 
 	private void addToCurrentChunkEnd(Vertex v){
 		currentChunk.vertices.add(v);
 		vertexAdded(v);
 	}
 
+	//adding vertex to the beginning of chunk 
 	private void addToCurrentChunkBegin(Vertex v){
 		currentChunk.vertices.add(0,v);
 		vertexAdded(v);
 	}
 
+	//method for making chunks; adding edges and vertices to chunk
 	private boolean incrementChunk(){
 		ArrayList<Edge> outEdges=new ArrayList<>(currentChunk.lastVertex().getOutEdges());
 		outEdges.sort(new Comparator<Edge>() {

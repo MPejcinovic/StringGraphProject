@@ -88,6 +88,7 @@ public class Graph implements Iterable<Vertex>{
 	
 	int i1=0,i2=0,i3=0,i4=0;
 
+	//edges creation using conditions described in Myers work
 	private void createEdge(Overlap overlap,HashMap<Integer, Vertex> map){
 		Read f=overlap.f.getRead();
 		Read g=overlap.g.getRead();
@@ -140,7 +141,8 @@ public class Graph implements Iterable<Vertex>{
 			createEdge(overlap, map);
 		}
 	}
-		
+	
+	//we don't get much by getting rid of empty Vertices, but this step is adviseable	
 	public void removeEmptyVertices(){
 		Iterator<Vertex> it=vertices.iterator();
 		while(it.hasNext()){

@@ -1,6 +1,7 @@
 package overlap;
 
 public class OverlapPart {
+	//parameter for better definition which overlap is containment
 	public static double percentMargin=7;
 	
 	private Read read;
@@ -9,11 +10,12 @@ public class OverlapPart {
 	public final int originalBegin;
 	public final int originalEnd;
 	
+	//get complement of part that is not overlap
 	public String getOverhangComplemented(){
 		return Read.complement(getOverhang());
 	}
 
-	
+	//setting extremes for overlap; calculating overhangs 
 	public String getOverhang(){
 		if(isForward()){
 			if(begin==0){
@@ -32,6 +34,7 @@ public class OverlapPart {
 		return "{read:"+read+"begin:"+begin+",end:"+end+"}";
 	}
 	
+	// defining direction
 	public boolean isForward(){
 		return begin<=end;
 	}
@@ -64,7 +67,8 @@ public class OverlapPart {
 		length++;
 		return length;
 	}
-	
+
+	//condition for containment	
 	public boolean isContainment(){
 		return //length()==read.length();
 				length()>=read.length()*(1-percentMargin/100);

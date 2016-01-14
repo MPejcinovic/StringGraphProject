@@ -8,12 +8,15 @@ import overlap.Overlap;
 import overlap.OverlapPart;
 import overlap.Read;
 
+// class for working with chunks; every chunk has array of edges and vertices that are included in that chunk, as well as index of it
+
 public class Chunk {
 
 	public int idx;
 	public ArrayList<Vertex> vertices=new ArrayList<>();
 	public ArrayList<Edge> edges=new ArrayList<>();
 	
+	//method that writes out the information about vertices and edges included in chunk
 	@Override
 	public String toString() {
 		int sum=0;
@@ -45,14 +48,18 @@ public class Chunk {
 		return b.toString();
 	}
 	
+	//last vertex in chunk
 	public Vertex lastVertex(){
 		return vertices.get(vertices.size()-1);
 	}
 
+	//first vertex in chunk
 	public Vertex firstVertex(){
 		return vertices.get(0);
 	}
 
+
+	//method for getting GFA format of chunks when they are represented in Gepard with 60 degrees inclination
 	public String toGFA60(){
 		StringBuilder b=new StringBuilder();
 		for(Vertex v:vertices){
@@ -61,6 +68,8 @@ public class Chunk {
 		return b.toString();
 	}
 	
+	
+	//method for getting GFA format of chunks when they are represented in Gepard with 45 degrees inclination
 	public String toGFA(){
 		StringBuilder b=new StringBuilder();
 		//b.append(vertices.get(0).getRead().sequence);

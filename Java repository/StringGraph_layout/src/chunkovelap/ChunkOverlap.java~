@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import overlap.Overlap;
 
-//class for making chunkOverlaps as a structure that contains array of overlaps(the same as chunkreads)
 public class ChunkOverlap {
 	
 	private ArrayList<Overlap> overlaps=new ArrayList<>();

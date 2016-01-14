@@ -13,12 +13,41 @@ import overlap.Read;
 public class Graph implements Iterable<Vertex>{
 
 	private List<Vertex> vertices;
+
+	public String toGFA(){
+		StringBuilder b=new StringBuilder();
+		b.append("H\tVN:Z:1.0\n");
+		for(Read r:getReads()){
+			b.append(r.toGFA());
+			b.append("\n");
+		}
+		for(Vertex v:vertices){
+			for(Edge e:v){
+				b.append(e.toGFARecursive());
+				b.append("\n");
+			}
+		}
+		return b.toString();
+	}
+	
+	public HashSet<Read> getReads(){
+		HashSet<Read> arr=new HashSet<>();
+		for(Vertex v:this){
+			for(Edge e:v){
+				for(Overlap overlap:e.getOverlaps()){
+					arr.add(overlap.f.getRead());
+					arr.add(overlap.g.getRead());
+				}
+			}
+		}
+		return arr;
+	}
 	
 	public HashSet<Overlap> getOverlaps(){
 		HashSet<Overlap> arr=new HashSet<>();
 		for(Vertex v:this){
 			for(Edge e:v){
-				arr.add(e.getOverlap());
+				arr.addAll(e.getOverlaps());
 			}
 		}
 		return arr;
@@ -52,9 +81,13 @@ public class Graph implements Iterable<Vertex>{
 			Vertex E=new Vertex(r, false);
 			vertices.add(B);
 			vertices.add(E);
+			//new Edge(B, E, null, r, 0, r.length());
+			//new Edge(E,B, null, r, 0, r.length());
 		}
 	}
 	
+	int i1=0,i2=0,i3=0,i4=0;
+
 	private void createEdge(Overlap overlap,HashMap<Integer, Vertex> map){
 		Read f=overlap.f.getRead();
 		Read g=overlap.g.getRead();
@@ -64,25 +97,33 @@ public class Graph implements Iterable<Vertex>{
 		Vertex GE=map.get(Vertex.hash(g, false));
 		if(overlap.f.begin>=overlap.f.end){
 			System.out.println(overlap.f.begin);
-			System.out.println(overlap.f.getLength());
+			System.out.println(overlap.f.length());
 			System.out.println("EEEEE");
 		}
 		if(overlap.f.begin>0){
 			if(overlap.g.begin<overlap.g.end){
-				new Edge(GB, FB,overlap, f, overlap.f.begin, 0);
-				new Edge(FE, GE,overlap, g, overlap.g.end, overlap.g.getLength());
+				//System.out.println("I1:"+overlap);
+				i1++;
+				new Edge(GB, FB,overlap, f, overlap.f.begin, 0,1);
+				new Edge(FE, GE,overlap, g, overlap.g.end, g.length(),1);
 			}else{
-				new Edge(GE, FB,overlap, f, overlap.f.begin, 0);
-				new Edge(FE, GB, overlap,g, overlap.g.end, 0);
+				//System.out.println("I2:"+overlap);
+				i2++;
+				new Edge(GE, FB,overlap, f, overlap.f.begin, 0,21);
+				new Edge(FE, GB, overlap,g, overlap.g.end, 0,22);
 			}
 		}
 		else{
 			if(overlap.g.begin<overlap.g.end){
-				new Edge(FB, GB, overlap,g, overlap.g.begin, 0);
-				new Edge(GE, FE, overlap,f, overlap.f.end, overlap.f.getLength());
+				//System.out.println("I3:"+overlap);
+				i3++;
+				new Edge(FB, GB, overlap,g, overlap.g.begin, 0,3);
+				new Edge(GE, FE, overlap,f, overlap.f.end, f.length(),3);
 			}else{
-				new Edge(FB, GE,overlap, g, overlap.g.getLength(), overlap.g.begin);
-				new Edge(GB, FE, overlap,f, overlap.f.end, overlap.f.getLength());
+				//System.out.println("I4:"+overlap);
+				i4++;
+				new Edge(FB, GE,overlap, g, overlap.g.begin,g.length(),4);
+				new Edge(GB, FE, overlap,f, overlap.f.end, f.length(),4);
 			}
 		}
 	}
@@ -90,13 +131,16 @@ public class Graph implements Iterable<Vertex>{
 	private void createEdges(Collection<Overlap> overlaps){
 		HashMap<Integer, Vertex> map=new HashMap<>();
 		for(Vertex v:vertices){
+			if(map.get(v.hashCode())!=null){
+				throw new IllegalStateException("map entry != null");
+			}
 			map.put(v.hashCode(), v);
 		}
 		for(Overlap overlap:overlaps){
 			createEdge(overlap, map);
 		}
 	}
-	
+		
 	public void removeEmptyVertices(){
 		Iterator<Vertex> it=vertices.iterator();
 		while(it.hasNext()){
@@ -110,6 +154,10 @@ public class Graph implements Iterable<Vertex>{
 	public Graph(Collection<Read> reads,Collection<Overlap> overlaps){
 		createVertices(reads);
 		createEdges(overlaps);
+		System.out.println("I1:"+i1);
+		System.out.println("I2:"+i2);
+		System.out.println("I3:"+i3);
+		System.out.println("I4:"+i4);
 		removeEmptyVertices();
 		for(Vertex v:vertices){
 			v.sortEdges();
@@ -119,6 +167,15 @@ public class Graph implements Iterable<Vertex>{
 	@Override
 	public Iterator<Vertex> iterator() {
 		return vertices.iterator();
+	}
+
+	public void report() {
+		for(Vertex v:vertices){
+			for(Edge e:v){
+				e.getOverlap().f.isLeftPart();
+				e.getOverlap().g.isLeftPart();
+			}
+		}
 	}
 	
 }

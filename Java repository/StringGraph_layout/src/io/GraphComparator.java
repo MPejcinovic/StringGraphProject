@@ -10,6 +10,7 @@ import overlap.Overlap;
 
 public class GraphComparator {
 
+	//method for comparing assembled graph and the given one (as desireable solution)
 	public static double compareGraph(Graph graph,String filePath,String solutionPath)throws IOException{
 		HashSet<Overlap> overlaps=graph.getOverlaps();
 		System.out.println("Overlaps size:"+overlaps.size());
@@ -33,6 +34,7 @@ public class GraphComparator {
 		return eval;
 	}
 	
+	// saving graph in file
 	public static void saveGraph(Graph graph,String filePath,String savePath) throws IOException{
 		HashSet<Overlap> overlaps=graph.getOverlaps();
 		System.out.println("Overlaps size:"+overlaps.size());

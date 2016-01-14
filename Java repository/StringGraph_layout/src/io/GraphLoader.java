@@ -18,6 +18,7 @@ public class GraphLoader {
 	private HashMap<Integer,Read> reads;
 	private HashSet<Read> containedReads;
 	
+	// get overlap; find out the direction anf build overlapPart
 	private OverlapPart getOverlapPart(int ID,int fwd,int begin,int end,int originalBegin,int originalEnd,int length){
 		Read read=reads.get(ID);
 		//System.out.println(read);
@@ -63,6 +64,7 @@ public class GraphLoader {
 		return arr;
 	}
 	
+	//read file and find out whether to compare begins and ends, or one begin with another end vice versa; get rid of containments
 	public Graph getGraph(String filePath,String readsFilePath) throws IOException{
 		BufferedReader reader=new BufferedReader(new FileReader(filePath));
 		String line;

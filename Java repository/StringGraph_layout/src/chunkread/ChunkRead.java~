@@ -5,16 +5,12 @@ import java.util.ArrayList;
 import overlap.Overlap;
 import overlap.Read;
 
-//class that represents basic read in the chunk, it is being created using ChunkMakerRead
-
 public class ChunkRead {
 
 	public int idx;
 	public ArrayList<Read> reads=new ArrayList<>();
 	public ArrayList<Overlap> overlaps=new ArrayList<>();
 	
-
-	//producing GFA graph that is suitable for displayin Gepard
 	public String toGFA(){
 		StringBuilder b=new StringBuilder("S\t"+idx+"\t");
 		b.append(reads.get(0).sequence);

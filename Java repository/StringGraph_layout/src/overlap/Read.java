@@ -1,11 +1,14 @@
 package overlap;
 
+
+//class that represents read with information about length, sequence and ID
 public class Read {
 
 	private int ID;
 	private int length;
 	public String sequence;
 	
+	// getting complement for read: A <-> T, C <-> G 
 	public static String complement(String str){
 		StringBuilder b=new StringBuilder(str);
 		for(int i=0;i<b.length();i++){
@@ -29,6 +32,7 @@ public class Read {
 		return b.toString();
 	}
 	
+	// getting part of string that represents read
 	public String get(int begin,int end){
 		if(begin<end){
 			//System.out.println(begin+" "+end+" "+sequence.length());

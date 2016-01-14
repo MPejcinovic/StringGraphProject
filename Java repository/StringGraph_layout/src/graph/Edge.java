@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import overlap.Overlap;
 import overlap.Read;
 
+//class for representing edges
+
 public class Edge {
 
 	private Vertex startVertex;

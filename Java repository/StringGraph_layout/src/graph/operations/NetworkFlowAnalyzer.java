@@ -7,6 +7,8 @@ import graph.Edge;
 import graph.Graph;
 import graph.Vertex;
 
+//class that implements simplifications from Myers work
+
 public class NetworkFlowAnalyzer {
 
     private Graph graph;
@@ -87,6 +89,7 @@ public class NetworkFlowAnalyzer {
         }
     }
     
+    //
     void removeVertices(){
     	Iterator<Vertex> iterator=graph.iterator();
         while(iterator.hasNext()) {

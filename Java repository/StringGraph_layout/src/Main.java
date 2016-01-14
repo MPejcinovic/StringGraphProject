@@ -16,6 +16,7 @@ import overlap.Read;
 
 public class Main {
 
+	//files with getting input information and storing output 
 	private static final String filePath="overlaps.mhap";
 	private static final String solutionPath="overlaps.after_unitigger.mhap";
 	private static final String savePath="output";
@@ -23,8 +24,10 @@ public class Main {
 	private static ChunkMaker chunkMaker;
 	private static Graph graph;
 	
+	//show some of the chunks in Gepard with 60 degrees inclination
 	private static void write60() throws IOException{
 		BufferedWriter writer=new BufferedWriter(new FileWriter("chunks60.gfa"));
+		//manually sort chunks to show them in Gepard 		
 		int[] arr=new int[]{3,-2,10,-35,31,19,34,-20,14,-60,-49,6,8,-4,17,-7,-0,11,25,-18,-23,-16,-42,30,-40,39,32};
 		System.out.println("LEN"+arr.length);
 		for(int i=0;i<arr.length;i++){
@@ -43,6 +46,7 @@ public class Main {
 		writer.close();
 	}
 
+	// show some of the chunks in Gepard with 45 degrees inclination 
 	private static void write45() throws IOException{
 		BufferedWriter writer=new BufferedWriter(new FileWriter("chunks45.gfa"));
 		//int[] arr=new int[]{3,-2,10,-35,31,19,34,-20,14,-60,-49,6,8,-4,17,-7,-0,11,25,-18,-23,-16,-42,30,-40,39,32};
@@ -66,6 +70,7 @@ public class Main {
 		writer.close();
 	}
 
+	//write all chunks to file to show them in Gepard
 	private static void write45All() throws IOException{
 		BufferedWriter writer=new BufferedWriter(new FileWriter("chunks45.gfa"));
 		for(int i=0;i<chunkMaker.chunks.size();i++){
@@ -83,6 +88,7 @@ public class Main {
 	private static void test() throws IOException{
 		BufferedWriter writer=new BufferedWriter(new FileWriter("chunks45.gfa"));
 		int[] chunks=new int[]{0,12,-1,-8,-5,1,2,-0,-4,1,-7,9,-3,-6,11,-2,-1,7,-10,-5,14,0};
+		//cutting chunks for better picture in Gepard		
 		int[] begins=new int[]{543250,0,0,0,0,300000,300000,1260340,0,75000,160000,0,0,0,0,0,660000,0,0,110000,0,0};
 		int[] ends=new int[]{1262070,0,100000,0,100000,700000,0,0,0,300000,0,0,0,0,0,315000,0,150000,0,0,0,543250};
 		
@@ -111,6 +117,7 @@ public class Main {
 		writer.close();
 	}
 
+	// write chunks in format adequate for Bandage
 	private static void writeBandageChunks() throws Exception{
 		BufferedWriter w=new BufferedWriter(new FileWriter("bandage-chunks.gfa"));
 		w.write("H\tVN:Z:1.0\n");

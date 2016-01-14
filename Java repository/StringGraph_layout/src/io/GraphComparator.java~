@@ -1,4 +1,6 @@
 package io;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,8 +10,9 @@ import overlap.Overlap;
 
 public class GraphComparator {
 
-	public static void compareGraph(Graph graph,String filePath,String solutionPath)throws IOException{
+	public static double compareGraph(Graph graph,String filePath,String solutionPath)throws IOException{
 		HashSet<Overlap> overlaps=graph.getOverlaps();
+		System.out.println("Overlaps size:"+overlaps.size());
 		HashSet<Integer> indices=new HashSet<>();
 		for(Overlap overlap:overlaps){
 			indices.add(overlap.IDX);
@@ -25,7 +28,26 @@ public class GraphComparator {
 		}
 		//System.out.println(myLines);
 		//System.out.println(solution);
-		System.out.println("Evaluation:"+(1.0*count/solution.size()));
+		double eval=1.0*count/solution.size();
+		System.out.println("Evaluation:"+eval);
+		return eval;
+	}
+	
+	public static void saveGraph(Graph graph,String filePath,String savePath) throws IOException{
+		HashSet<Overlap> overlaps=graph.getOverlaps();
+		System.out.println("Overlaps size:"+overlaps.size());
+		HashSet<Integer> indices=new HashSet<>();
+		for(Overlap overlap:overlaps){
+			indices.add(overlap.IDX);
+		}
+		//System.out.println(indices);
+		ArrayList<String> myLines=GraphLoader.getLines(indices, filePath);
+		BufferedWriter writer=new BufferedWriter(new FileWriter(savePath));
+		for(String line:myLines){
+			writer.write(line);
+			writer.write("\n");
+		}
+		writer.close();
 	}
 	
 }

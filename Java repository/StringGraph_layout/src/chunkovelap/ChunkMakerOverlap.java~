@@ -8,7 +8,6 @@ import java.util.Iterator;
 import graph.Graph;
 import overlap.Overlap;
 
-//class that adds chunkOverlaps made from overlaps
 public class ChunkMakerOverlap {
 
 	private Graph graph;
@@ -17,7 +16,6 @@ public class ChunkMakerOverlap {
 	public ArrayList<ChunkOverlap> chunkOverlaps=new ArrayList<>();
 	public ArrayList<ChunkOverlap> mergedChunks=new ArrayList<>();
 	
-	//adding chunkOverlaps
 	private boolean incrementChunk(){
 		Iterator<Overlap> iterator=overlaps.iterator();
 		while(iterator.hasNext()){
@@ -41,7 +39,6 @@ public class ChunkMakerOverlap {
 		
 	}
 	
-//adding chunkoverlaps and sorting them
 	public void process(){
 		overlaps=graph.getOverlaps();
 		while(overlaps.size()!=0){
