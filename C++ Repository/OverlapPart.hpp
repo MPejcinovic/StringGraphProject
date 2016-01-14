@@ -15,7 +15,6 @@ public:
     int originalBegin;
     int originalEnd;
     
-    static int absoluteMargin;
     static double percentMargin;
     
     
@@ -35,6 +34,9 @@ public:
     
     bool isRightPart(){
         return !isLeftPart();
+    }
+    
+    OverlapPart(){
     }
     
     OverlapPart(Read *read,int begin,int end, int originalBegin, int originalEnd){
@@ -60,7 +62,7 @@ public:
     
     bool isContainment(){
         return //length()==read.length();
-        length()>=read->getLength()*(1-percentMargin/100)-absoluteMargin;
+        length()>=read->getLength()*(1-percentMargin/100);
     }
     
     bool containsRead(Read *read) {

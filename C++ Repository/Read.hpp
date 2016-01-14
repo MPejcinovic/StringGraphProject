@@ -10,14 +10,19 @@
 #include <string>
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 
 class Read {
 public:
+    int REFERENCE=2;
     int ID;
     int length;
     std::string sequence;
     
 public:
+    
+    ~Read(){
+    }
     static std::string complement(std::string str){
         std::string string="";
         for(int i=0;i<str.length();i++){

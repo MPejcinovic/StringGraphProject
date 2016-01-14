@@ -26,26 +26,9 @@ public:
         ss<<vertices[0]->getRead()->getID() << " :" << vertices[0]->getRead()->getLength() << "\n";
         sum+=vertices[0]->getRead()->getLength();
         for(int i=0;i<edges.size();i++){
-            //System.out.println("A");
             Edge *edge=edges[i];
-            if(edge->getStartVertex()!=vertices[i]){
-                exit(-1);
-            }
             sum+=edge->length();
             ss << edge->toString() << " Sum:" << sum << "\n";
-            /*
-             Read read=edge.getEndVertex().getRead();
-             Overlap overlap=edge.getOverlap();
-             OverlapPart part=overlap.f;
-             if(part.getRead()!=read){
-             part=overlap.g;
-             }
-             
-             if(part.isForward()){
-             b.append(read.get(part.end, read.length()-1));
-             }else{
-             b.append(read.get(part.begin,0));
-             }*/
         }
         return ss.str();
     }
@@ -58,17 +41,8 @@ public:
         return vertices[0];
     }
     
-    std::string toGFA60(){
-        std::stringstream ss;
-        for(Vertex *v:vertices){
-            ss << v->getRead()->sequence;
-        }
-        return ss.str();
-    }
-    
     std::string toGFA(){
         std::stringstream ss;
-        //b.append(vertices.get(0).getRead().sequence);
         if(!vertices[0]->BEGIN){
             ss << vertices[0]->getRead()->sequence;
         }else{
@@ -76,33 +50,18 @@ public:
             std::reverse(str.begin(),str.end());
             ss << str;
         }
-        //b.append(vertices.get(0).getRead().sequence);
         for(int i=0;i<edges.size();i++){
-            //System.out.println("A");
             Edge *edge=edges[i];
             if(edge->getStartVertex()!=vertices[i]){
                 exit(-2);
             }
             ss << edge->toDNA();
-            /*
-             Read read=edge.getEndVertex().getRead();
-             Overlap overlap=edge.getOverlap();
-             OverlapPart part=overlap.f;
-             if(part.getRead()!=read){
-             part=overlap.g;
-             }
-             
-             if(part.isForward()){
-             b.append(read.get(part.end, read.length()-1));
-             }else{
-             b.append(read.get(part.begin,0));
-             }*/
         }
         return ss.str();
     }
     
-    static bool sortFunction(Chunk* i,Chunk *j){
-        return i->size()>j->size();
+    static bool sortFunction(Chunk& i,Chunk& j){
+        return i.size()>j.size();
     }
     
     Chunk(){

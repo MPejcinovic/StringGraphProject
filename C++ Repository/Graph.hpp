@@ -18,6 +18,12 @@ class Graph {
 public:
     std::vector<Vertex*> vertices;
 
+    ~Graph(){
+        for(Vertex *v :vertices){
+            delete v;
+        }
+    }
+    
     std::string toGFA(){
         std::stringstream ss;
         
@@ -27,25 +33,29 @@ public:
         }
         for(Vertex *v:vertices){
             for(Edge *e:v->getOutEdges()){
-                ss << e->toGFA() << "\n";
+                ss << e->toGFARecursive() << "\n";
             }
         }
         return ss.str();
     }
     
+    /*  Calculates all reads present in the graph (referenced by it's edges)
+     */
     std::set<Read*> getReads(){
         std::set<Read*> arr;
         for(Vertex *v:vertices){
             for(Edge *e:v->getOutEdges()){
                 for(Overlap *overlap:e->getOverlaps()){
-                    arr.insert(overlap->f.getRead());
-                    arr.insert(overlap->g.getRead());
+                    arr.insert(overlap->f->getRead());
+                    arr.insert(overlap->g->getRead());
                 }
             }
         }
         return arr;
     }
     
+    /*  Calculates all overlaps present in the graph (referenced by it's edges)
+     */
     std::set<Overlap*> getOverlaps(){
         std::set<Overlap*> arr;
         for(Vertex *v:vertices){
@@ -81,93 +91,91 @@ public:
     }
     
 private:
-    void createVertices(std::vector<Read*> reads){
-        for(Read *r:reads){
+    
+    /*  Creates the initial vertices of the graph using the provided reads,
+     *  for each read 2 vertices are created
+     */
+    void createVertices(std::map<int,Read*>& reads){
+        vertices=std::vector<Vertex*>(reads.size()*2);
+        int idx=0;
+        auto iterator=reads.begin();
+        while(iterator!=reads.end()){
+            Read *r=iterator->second;
             Vertex *B=new Vertex(r, true);
             Vertex *E=new Vertex(r, false);
-            vertices.push_back(B);
-            vertices.push_back(E);
-            //new Edge(B, E, null, r, 0, r.length());
-            //new Edge(E,B, null, r, 0, r.length());
+            vertices[idx*2]=B;
+            vertices[idx*2+1]=E;
+            idx++;
+            ++iterator;
         }
     }
     
-    int i1=0,i2=0,i3=0,i4=0;
     
+    /*  Creates 2 edge of the graph using the provided overlap and vertices
+     */
     void createEdge(Overlap *overlap,std::map<int, Vertex*> map){
-        Read *f=overlap->f.getRead();
-        Read *g=overlap->g.getRead();
+        Read *f=overlap->f->getRead();
+        Read *g=overlap->g->getRead();
         Vertex *FB=map[Vertex::hash(f, true)];
         Vertex *FE=map[Vertex::hash(f, false)];
         Vertex *GB=map[Vertex::hash(g, true)];
         Vertex *GE=map[Vertex::hash(g, false)];
-        if(overlap->f.begin>=overlap->f.end){
-            std::cout <<"EEEEEE";
-            /*System.out.println(overlap.f.begin);
-            System.out.println(overlap.f.length());
-            System.out.println("EEEEE");*/
-        }
-        if(overlap->f.begin>0){
-            if(overlap->g.begin<overlap->g.end){
-                //System.out.println("I1:"+overlap);
-                i1++;
-                new Edge(GB, FB,overlap, f, overlap->f.begin, 0,1);
-                new Edge(FE, GE,overlap, g, overlap->g.end, g->getLength(),1);
+        if(overlap->f->begin>0){
+            if(overlap->g->begin<overlap->g->end){
+                new Edge(GB, FB,overlap, f, overlap->f->begin, 0,1);
+                new Edge(FE, GE,overlap, g, overlap->g->end, g->getLength(),1);
             }else{
-                //System.out.println("I2:"+overlap);
-                i2++;
-                new Edge(GE, FB,overlap, f, overlap->f.begin, 0,21);
-                new Edge(FE, GB, overlap,g, overlap->g.end, 0,22);
+                new Edge(GE, FB,overlap, f, overlap->f->begin, 0,21);
+                new Edge(FE, GB, overlap,g, overlap->g->end, 0,22);
             }
         }
         else{
-            if(overlap->g.begin<overlap->g.end){
-                //System.out.println("I3:"+overlap);
-                i3++;
-                new Edge(FB, GB, overlap,g, overlap->g.begin, 0,3);
-                new Edge(GE, FE, overlap,f, overlap->f.end, f->getLength(),3);
+            if(overlap->g->begin<overlap->g->end){
+                new Edge(FB, GB, overlap,g, overlap->g->begin, 0,3);
+                new Edge(GE, FE, overlap,f, overlap->f->end, f->getLength(),3);
             }else{
-                //System.out.println("I4:"+overlap);
-                i4++;
-                new Edge(FB, GE,overlap, g, overlap->g.begin,g->getLength(),4);
-                new Edge(GB, FE, overlap,f, overlap->f.end, f->getLength(),4);
+                new Edge(FB, GE,overlap, g, overlap->g->begin,g->getLength(),4);
+                new Edge(GB, FE, overlap,f, overlap->f->end, f->getLength(),4);
             }
         }
     }
     
-    void createEdges(std::vector<Overlap*> overlaps){
+    
+    /*  Creates the edge of the graph using the provided overlaps,
+     *  for each overlap 2 edges are created as described in the string graph paper
+     */
+    void createEdges(std::vector<Overlap*>& overlaps){
         std::map<int, Vertex*> map;
         for(Vertex *v:vertices){
-            if(map[v->hashCode()]!=NULL){
-                std::cout <<"map entry != null\n";
-            }
             map[v->hashCode()]=v;
         }
         for(Overlap *overlap:overlaps){
-            createEdge(overlap, map);
+            if(overlap!=NULL){
+                createEdge(overlap, map);   
+            }
         }
     }
     
 public:
+    
+    /*  Removes all vertices with no in-edges and no out-edges from the graph
+     */
     void removeEmptyVertices(){
         auto it=vertices.begin();
         while(it!=vertices.end()){
             Vertex *v=*it;
             if(v->getInEdges().size()==0&&v->getOutEdges().size()==0){
                 it=vertices.erase(it);
+                delete v;
             }else{
                 ++it;
             }
         }
     }
     
-    Graph(std::vector<Read*> reads,std::vector<Overlap*> overlaps){
+    Graph(std::map<int,Read*> reads,std::vector<Overlap*> overlaps){
         createVertices(reads);
         createEdges(overlaps);
-        std::cout << "I1:" << i1 << "\n";
-        std::cout << "I2:" << i2 << "\n";
-        std::cout << "I3:" << i3 << "\n";
-        std::cout << "I4:" << i4 << "\n";
         std::cout <<toString()<<"\n";
         removeEmptyVertices();
         for(Vertex *v:vertices){
@@ -175,13 +183,4 @@ public:
         }
     }
     
-    void report() {
-        for(Vertex *v:vertices){
-            for(Edge *e:v->getOutEdges()){
-                e->getOverlap()->f.isLeftPart();
-                e->getOverlap()->g.isLeftPart();
-            }
-        }
-    }
-
 };

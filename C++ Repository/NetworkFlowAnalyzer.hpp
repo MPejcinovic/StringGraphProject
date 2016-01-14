@@ -25,6 +25,8 @@ private:
         return edge->length()*A-edge->numContainedEdges()*log(2)>=17;
     }
     
+    /*  Calculates the A-statistic on the graph
+     */
     void approximateAStatistic(){
         double G=0;
         double n=0;
@@ -45,6 +47,8 @@ private:
     
     std::map<Edge*, int> edgeToMark;
     
+    /*  Mark the edges of v using the calculated A-statistic
+     */
     void processVertex(Vertex *v){
         for(Edge *edge:v->getOutEdges()){
             if(isEqualsOne(edge)){
@@ -61,6 +65,8 @@ private:
     
     std::map<Vertex*, int> B;
     
+    /*  Calculates the demand of flow through v
+     */
     void calculateB(Vertex *v){
         int sum=0;
         for(Edge *edge:v->getInEdges()){
@@ -76,6 +82,9 @@ private:
         B[v]=sum;
     }
     
+    /*  Remove every edge that has the upper bound of flow 0
+     */
+
     void removeEdges(Vertex *v){
         auto iterator=v->getOutEdges().begin();
         while(iterator!=v->getOutEdges().end()){
@@ -84,12 +93,15 @@ private:
             if(edgeToMark[vw]==NETWORK_FLOW_MARK_EQUALS_1){
                iterator=v->getOutEdges().erase(iterator);
                 w->getInEdges().erase(std::find(w->getInEdges().begin(), w->getInEdges().end(), vw));
+                delete vw;
             }else{
                 ++iterator;
             }
         }
     }
     
+    /*  Remove each vertex with supply of flow equal to 0 and out-degree or in-degree equal to 0
+     */
     void removeVertices(){
         auto iterator=graph->vertices.begin();
         while(iterator!=graph->vertices.end()) {
@@ -99,19 +111,8 @@ private:
                 continue;
             }
             if(v->getInEdges().size()==0||v->getOutEdges().size()==0){
-                auto it=v->getInEdges().begin();
-                while(it!=v->getInEdges().end()){
-                    Edge *e=*it;
-                    e->getStartVertex()->getOutEdges().erase(std::find(e->getStartVertex()->getOutEdges().begin(), e->getStartVertex()->getOutEdges().end(), e));
-                    it=v->getInEdges().erase(it);
-                }
-                it=v->getOutEdges().begin();
-                while(it!=v->getOutEdges().end()){
-                    Edge *e=*it;
-                    e->getEndVertex()->getInEdges().erase(std::find(e->getEndVertex()->getInEdges().begin(), e->getEndVertex()->getInEdges().end(), e));
-                    it=v->getOutEdges().erase(it);
-                }
                 iterator=graph->vertices.erase(iterator);
+                delete v;
             }
             else{
                 ++iterator;
