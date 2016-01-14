@@ -10,6 +10,7 @@ Edge::Edge(Vertex *startVertex,Vertex *endVertex,Overlap *overlap,Read *read,int
     this->startVertex=startVertex;
     this->endVertex=endVertex;
     this->read=read;
+    read->REFERENCE++;
     this->overlap=overlap;
     this->beginIdx=beginIdx;
     this->endIdx=endIdx;
@@ -17,7 +18,6 @@ Edge::Edge(Vertex *startVertex,Vertex *endVertex,Overlap *overlap,Read *read,int
     startVertex->getOutEdges().push_back(this);
     endVertex->getInEdges().push_back(this);
     startVertex->sortEdges();
-    //System.out.println(this);
 }
 
 std::string Edge::toDNA(){
@@ -31,13 +31,23 @@ std::string Edge::toDNA(){
 std::string Edge::toGFA(){
     std::stringstream ss;
     ss << "L\t" <<
-				overlap->leftPart().getRead()->getID() <<
-				"\t" << (overlap->leftPart().isForward()?"+":"-") << "\t" <<
-				overlap->rightPart().getRead()->getID() <<
-				"\t" << (overlap->rightPart().isForward()?"+":"-") << "\t" <<
+				overlap->leftPart()->getRead()->getID() <<
+				"\t" << (overlap->leftPart()->isForward()?"+":"-") << "\t" <<
+				overlap->rightPart()->getRead()->getID() <<
+				"\t" << (overlap->rightPart()->isForward()?"+":"-") << "\t" <<
 				overlap->size() << "M";
     return ss.str();
 }
+
+std::string Edge::toGFARecursive(){
+    std::string GFA=toGFA();
+    for(Edge *e:containedEdges){
+        GFA.append("\n");
+        GFA.append(e->toGFARecursive());
+    }
+    return GFA;
+}
+
 
 std::string Edge::toString() {
     std::stringstream ss;
@@ -94,6 +104,20 @@ int Edge::numContainedEdges(){
         num+=edge->numContainedEdges();
     }
     return num;
+}
+
+Edge::~Edge(){
+    for(Edge *edge:containedEdges){
+        delete edge;
+    }
+    overlap->REFERENCE--;
+    if(overlap->REFERENCE==0){
+        delete overlap;   
+    }
+    read->REFERENCE--;
+    if(read->REFERENCE==0){
+        delete read;
+    }
 }
 
 int Edge::length(){

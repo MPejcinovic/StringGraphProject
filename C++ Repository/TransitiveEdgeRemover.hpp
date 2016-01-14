@@ -20,13 +20,13 @@ private:
     int count2=0;
     Graph *graph;
     std::map<Vertex*, int> vertexMarks;
-    //private HashMap<Edge, Boolean> edgeToReduce;
+    std::map<Edge*,bool> edgeToReduce;
     
-    int mark(Vertex *v){
+    int getMark(Vertex *v){
         return vertexMarks[v];
     }
     
-    void mark(Vertex *v,int m){
+    void setMark(Vertex *v,int m){
         vertexMarks[v]=m;
     }
     
@@ -35,7 +35,7 @@ private:
         for(Edge *vw:v->getOutEdges()){
             Vertex *w=vw->getEndVertex();
             w->sortEdges();
-            if(mark(w)!=INPLAY){
+            if(getMark(w)!=INPLAY){
                 continue;
             }
             
@@ -44,9 +44,9 @@ private:
                     break;
                 }
                 Vertex *x=wx->getEndVertex();
-                if(mark(x)==INPLAY){
+                if(getMark(x)==INPLAY){
                     count1++;
-                    mark(x,ELIMINATED);
+                    setMark(x,ELIMINATED);
                 }
             }
         }
@@ -56,20 +56,19 @@ private:
         for(Edge *vw :v->getOutEdges()){
             Vertex *w=vw->getEndVertex();
             int numIter=0;
-            //w.sortEdges();
             for(Edge *wx : w->getOutEdges()){
                 Vertex *x=wx->getEndVertex();
                 numIter++;
-                if(mark(x)!=INPLAY){
+                if(getMark(x)!=INPLAY){
                     continue;
                 }
                 if(numIter==1){
                     count2++;
-                    mark(x,ELIMINATED);
+                    setMark(x,ELIMINATED);
                 }
                 else if(wx->length()<FUZZ){
                     count2++;
-                    mark(x,ELIMINATED);
+                    setMark(x,ELIMINATED);
                 }
                 else if (wx->length()>=FUZZ){
                     break;
@@ -82,18 +81,18 @@ private:
         v->sortEdges();
         for(Edge *vw:v->getOutEdges()){
             Vertex *w=vw->getEndVertex();
-            mark(w, INPLAY);
+            setMark(w, INPLAY);
         }
     }
     
     void markEliminatedEdgesAndReset(Vertex *v){
         for(Edge *vw :v->getOutEdges()){
             Vertex *w=vw->getEndVertex();
-            if(mark(w)==ELIMINATED){
-                vw->reduce=true;
+            if(getMark(w)==ELIMINATED){
+                edgeToReduce[vw]=true;
                 //edgeToReduce.put(vw, true);
             }
-            mark(w,VACANT);
+            setMark(w,VACANT);
         }
     }
     
@@ -102,7 +101,7 @@ private:
         prepareVertex(v);
         int maxLen=200000000;
         if(v->getOutEdges().size()!=0){
-            maxLen=v->getOutEdges()[v->getOutEdges().size()-1]->length()+FUZZ;
+            maxLen=v->getOutEdges()[v->getOutEdges().size()-1]->length()+FUZZ;  //take the longest edge+FUZZ
         }
         removeTransitiveEdges(v, maxLen);
         removeShortEdges(v);
@@ -114,35 +113,28 @@ private:
             auto it=v->getOutEdges().begin();
             while(it!=v->getOutEdges().end()){
                 Edge *e=*it;
-                /*if(!edgeToReduce.get(e)){
-                 continue;
-                 }*/
-                if(!e->reduce){
+                if(!edgeToReduce[e]){//skip if shouldn't reduce
                     ++it;
                     continue;
                 }
-                //System.out.println("REMOVED EDGE:"+e);
                 it=v->getOutEdges().erase(it);
                 e->getEndVertex()->getInEdges().erase(std::find(e->getEndVertex()->getInEdges().begin(), e->getEndVertex()->getInEdges().end(), e));
+                delete e;
             }
         }
     }
     
 public:
+
     void process(){
-        //edgeToReduce=new HashMap<>();
         for(Vertex *v:graph->vertices){
-            vertexMarks[v]=VACANT;
+            vertexMarks[v]=VACANT;      //mark all vertices as vacant
             for(Edge *e:v->getOutEdges()){
-                /*if(edgeToReduce.get(e)!=null){
-                 System.out.println("AAA");
-                 }*/
-                e->reduce=false;
-                //edgeToReduce.put(e, false);
+                edgeToReduce[e]=false;  //mark all edges as don't_reduce
             }
         }
         for(Vertex *v:graph->vertices){
-            processVertex(v);
+            processVertex(v);//process all vertices
         }
         std::cout <<"Transitive removed:" <<count1 << "\n";
         std::cout <<"Short removed:" <<count2 << "\n";

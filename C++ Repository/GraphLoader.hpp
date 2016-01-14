@@ -1,5 +1,4 @@
 
-
 #pragma once
 #include "Overlap.hpp"
 #include <unordered_set>
@@ -20,7 +19,7 @@ private:
     std::map<int,Read*> reads;
     std::set<Read*>containedReads;
     
-    OverlapPart getOverlapPart(int ID,int fwd,int begin,int end,int originalBegin,int originalEnd,int length){
+    OverlapPart* getOverlapPart(int ID,int fwd,int begin,int end,int originalBegin,int originalEnd,int length){
         auto it=reads.find(ID);
         Read *read=it->second;
         //System.out.println(read);
@@ -35,14 +34,14 @@ private:
          end=length;
          }*/
         if(fwd==0){
-            return OverlapPart(read, begin, end,originalBegin,originalEnd);
+            return new OverlapPart(read, begin, end,originalBegin,originalEnd);
         }
-        return OverlapPart(read, end, begin,originalEnd,originalBegin);
+        return new OverlapPart(read, end, begin,originalEnd,originalBegin);
     }
     
     
 public:
-    
+        
     Graph* getGraph(std::string filePath,std::string readsFilePath){
         std::ifstream file(filePath);
         std::string   line;
@@ -50,12 +49,9 @@ public:
         reads.clear();
         containedReads.clear();
 
-        std::cout <<"OPAA\n";
-        
         int idx=0;
         while(std::getline(file, line)){
             std::stringstream   linestream(line);
-            double garbage;
             int ID1;
             linestream >>ID1;
             
@@ -63,8 +59,11 @@ public:
             linestream >>ID2;
 
             
-            linestream >>garbage;
-            linestream >>garbage;
+            linestream.ignore(128,' ');
+            linestream.ignore(128,' ');
+            linestream.ignore(128,' ');
+            //linestream.ignore(128,' ');
+            //linestream >>garbage;
 
             int fwd1;
             linestream >>fwd1;
@@ -126,27 +125,36 @@ public:
                 }
             }
             
-            OverlapPart f=getOverlapPart(ID1,fwd1, begin1, end1,originalBegin1,originalEnd1, length1);
-            OverlapPart g=getOverlapPart(ID2,fwd2, begin2, end2,originalBegin2,originalEnd2, length2);
+            OverlapPart *f=getOverlapPart(ID1,fwd1, begin1, end1,originalBegin1,originalEnd1, length1);
+            OverlapPart *g=getOverlapPart(ID2,fwd2, begin2, end2,originalBegin2,originalEnd2, length2);
             
             Overlap *overlap=new Overlap(idx,f, g);
-            if(f.isContainment()){
-                containedReads.insert(f.getRead());
+            if(f->isContainment()){
+                containedReads.insert(f->getRead());
             }
-            if(g.isContainment()){
-                containedReads.insert(g.getRead());
+            if(g->isContainment()){
+                containedReads.insert(g->getRead());
             }
             overlaps.push_back(overlap);
             idx++;
+            if(idx==25000){
+                //break;
+            }
         }
         
         file.close();
-        
         file=std::ifstream(readsFilePath);
         int readID=1;
         while(std::getline(file, line)){
+            if(reads.find(readID)==reads.end()){
+                std::getline(file, line);
+                std::getline(file, line);//+
+                std::getline(file, line);//,+,+,+,+,
+                readID++;
+                continue;
+            }
             Read *read=reads.find(readID)->second;
-            if(read==NULL){
+            if(containedReads.find(read)!=containedReads.end()){
                 std::getline(file, line);
                 std::getline(file, line);//+
                 std::getline(file, line);//,+,+,+,+,
@@ -165,29 +173,34 @@ public:
         std::cout << "Num reads:" << reads.size() << "\n";
         std::cout << "Num overlaps:" << overlaps.size()<< "\n";
         
-        std::vector<Read*> finalReads;
-        for(auto &iterator : reads){
-            if(containedReads.find(iterator.second)==containedReads.end()){
-                finalReads.push_back(iterator.second);
+        /*  Finds the final reads that will be used to construct the graph - the reads that are not containments
+         */
+        auto readsIterator=reads.begin();
+        while(readsIterator!=reads.end()){
+            Read *read=readsIterator->second;
+            if(containedReads.find(readsIterator->second)==containedReads.end()){
+                ++readsIterator;
             }else{
-                std::cout << "Skipped read:" << iterator.second->toString() << "\n";
+                readsIterator=reads.erase(readsIterator);
+                delete read;
             }
         }
         
-        std::vector<Overlap*> finalOverlaps;
-        
-        for(Overlap *overlap:overlaps){
-            if(containedReads.find(overlap->f.getRead())!=containedReads.end()){
+        /*  Finds the final oerlaps that will be used to construct the graph - the overlaps that don't involve a contained read
+         */
+        for(int i=0;i<overlaps.size();i++){
+            Overlap *overlap=overlaps[i];
+            if(containedReads.find(overlap->f->getRead())!=containedReads.end()){
+                overlaps[i]=NULL;
+                delete overlap;
                 continue;
             }
-            if(containedReads.find(overlap->g.getRead())!=containedReads.end()){
+            if(containedReads.find(overlap->g->getRead())!=containedReads.end()){
+                overlaps[i]=NULL;
+                delete overlap;
                 continue;
             }
-            finalOverlaps.push_back(overlap);
         }
-        std::cout << "Num finalReads:" << finalReads.size();
-        std::cout << "Num finalOverlaps:" << finalOverlaps.size();
-        
-        return new Graph(finalReads, finalOverlaps);
+        return new Graph(reads, overlaps);
     }
 };
