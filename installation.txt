@@ -1,6 +1,6 @@
 To compile run:
 
-g++ main.cpp Chunk.cpp ChunkMaker.cpp DebugPrint.cpp Edge.cpp Graph.cpp GraphCompare.cpp GraphLoader.cpp InternalVertexRemover.cpp NetworkFlowAnalyzer.cpp Overlap.cpp OverlapPart.cpp Read.cpp TransitiveEdgeRemover.cpp Vertex.cpp
+g++ main.cpp Chunk.cpp ChunkMaker.cpp DebugPrint.cpp Edge.cpp Graph.cpp  GraphLoader.cpp InternalVertexRemover.cpp NetworkFlowAnalyzer.cpp Overlap.cpp OverlapPart.cpp Read.cpp TransitiveEdgeRemover.cpp Vertex.cpp
 
 To run:
 
