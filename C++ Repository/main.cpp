@@ -16,7 +16,6 @@
 #include "TransitiveEdgeRemover.hpp"
 #include "InternalVertexRemover.hpp"
 #include "NetworkFlowAnalyzer.hpp"
-#include "GraphCompare.hpp"
 #include "ChunkMaker.hpp"
 #include <fstream>
 #include <math.h>
