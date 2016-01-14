@@ -23,7 +23,7 @@ public class Graph implements Iterable<Vertex>{
 		}
 		for(Vertex v:vertices){
 			for(Edge e:v){
-				b.append(e.toGFA());
+				b.append(e.toGFARecursive());
 				b.append("\n");
 			}
 		}

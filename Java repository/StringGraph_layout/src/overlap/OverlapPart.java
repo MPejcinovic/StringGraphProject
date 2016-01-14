@@ -2,8 +2,7 @@ package overlap;
 
 public class OverlapPart {
 	public static double percentMargin=7;
-	public static int absoluteMargin=20;
-
+	
 	private Read read;
 	public final int begin;
 	public final int end;
@@ -68,7 +67,7 @@ public class OverlapPart {
 	
 	public boolean isContainment(){
 		return //length()==read.length();
-				length()>=read.length()*(1-percentMargin/100)-absoluteMargin;
+				length()>=read.length()*(1-percentMargin/100);
 	}
 
 	public boolean containsRead(Read read) {

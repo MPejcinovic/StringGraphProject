@@ -61,7 +61,7 @@ public class ChunkMaker {
 		if(true){
 			for(Edge e:outEdges){
 				int len=e.segmentLength();
-				if(len<MIN_LENGTH||len>MAX_LENGTH){
+				if(len>MAX_LENGTH){
 					continue;
 				}
 				if(!vertices.contains(e.getEndVertex())){
@@ -90,7 +90,7 @@ public class ChunkMaker {
 		if(true){
 			for(Edge e:inEdges){
 				int len=e.segmentLength();
-				if(len<MIN_LENGTH||len>MAX_LENGTH){
+				if(len>MAX_LENGTH){
 					continue;
 				}
 				if(!vertices.contains(e.getStartVertex())){
@@ -131,6 +131,7 @@ public class ChunkMaker {
 			while(incrementChunk()){
 			}
 			chunks.add(currentChunk);
+			System.out.println(maxIdx);
 			
 			//break;
 		}

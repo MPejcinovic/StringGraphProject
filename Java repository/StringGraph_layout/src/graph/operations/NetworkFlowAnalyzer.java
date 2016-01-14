@@ -11,7 +11,7 @@ public class NetworkFlowAnalyzer {
 
     private Graph graph;
     private double A=0;
-    int NETWORK_FLOW_MIN_LENGTH=100000;
+    int NETWORK_FLOW_MIN_LENGTH=10000;
     
     boolean isEqualsOne(Edge edge){
         //std::cout <<"AA:"<<edge->length*A-edge->labelBegins.size()*log(2)<<"\n";
@@ -113,8 +113,10 @@ public class NetworkFlowAnalyzer {
     }
         
     public void process(){
-        approximateAStatistic();
-        for(Vertex v:graph){
+    	approximateAStatistic();
+		System.out.println(A);
+
+    	for(Vertex v:graph){
             processVertex(v);
         }
         for(Vertex v:graph){

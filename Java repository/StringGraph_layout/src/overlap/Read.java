@@ -31,12 +31,13 @@ public class Read {
 	
 	public String get(int begin,int end){
 		if(begin<end){
+			//System.out.println(begin+" "+end+" "+sequence.length());
 			return sequence.substring(begin, end);
 		}
 		if(begin==end){
 			return "";
 		}
-		//System.out.println("B:"+begin+" E:"+end);
+		//System.out.println("B:"+begin+" E:"+end+" L:"+sequence.length());
 		StringBuilder b=new StringBuilder(complement(sequence.substring(end+1, begin))); 
 		return b.reverse().toString();
 	}
